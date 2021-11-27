@@ -1,0 +1,183 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.29")
+        classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4+")
+        classpath('org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3')
+        classpath "io.freefair.gradle:lombok-plugin:6.3.0"
+    }
+}
+
+plugins {
+    id 'checkstyle'
+    id 'pmd'
+    id 'jacoco'
+    id "io.freefair.lombok" version "6.3.0"
+
+    id 'org.springframework.boot' version '2.6.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+apply plugin: "io.freefair.lombok"
+apply plugin: 'io.spring.javaformat'
+apply plugin: 'checkstyle'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'org.sonarqube'
+
+group = "com.blogspot.ostas.apps.dbdive"
+version = "0.0.0.1"
+
+checkstyle {
+    toolVersion = "8.45.1"
+    sourceSets = [project.sourceSets.main]
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+artifactory {
+    contextUrl = System.getenv("ARTIFACTORY_CONTEXT_URL")
+    publish {
+        repository {
+            repoKey = 'repo1'
+            username = System.getenv("ARTIFACTORY_USER")
+            password = System.getenv("ARTIFACTORY_PASSWORD")
+            maven = true
+        }
+        defaults {
+            publications('mavenJava')
+            publishArtifacts = true
+            properties = ['qa.level': 'basic', 'dev.team': 'core']
+            publishPom = true
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'default-maven-virtual'
+            username = System.getenv("ARTIFACTORY_USER")
+            password = System.getenv("ARTIFACTORY_PASSWORD")
+            maven = true
+        }
+    }
+}
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+task testJar(type: Jar) {
+    from sourceSets.test.output
+    archiveClassifier = "tests"
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            artifact testJar
+        }
+    }
+}
+pmd {
+    consoleOutput = true
+    toolVersion = "6.21.0"
+    ignoreFailures = false
+    rulesMinimumPriority = 5
+    ruleSets = ["category/java/bestpractices.xml"]
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.5
+            }
+        }
+
+        rule {
+            enabled = false
+            element = 'CLASS'
+            includes = ['org.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 0.3
+            }
+        }
+
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.projectKey", "myproject1"
+        property 'sonar.login', System.getenv("SONAR_TOKEN")
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+dependencies {
+    checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:0.0.29")
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    implementation 'mysql:mysql-connector-java'
+
+    implementation 'org.jgrapht:jgrapht-core:1.5.1'
+    implementation 'org.jgrapht:jgrapht-io:1.5.1'
+    implementation 'org.jgrapht:jgrapht-ext:1.5.1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:mysql'
+
+    testImplementation 'org.dbunit:dbunit:2.7.2'
+
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1'
+
+    implementation 'org.apache.velocity:velocity-engine-core:2.3'
+}
+
+ext {
+    set('testcontainersVersion', "1.16.0")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+    }
+}
