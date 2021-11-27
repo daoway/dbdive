@@ -1,0 +1,1 @@
+gradlew clean build 1> out.log 2>&1

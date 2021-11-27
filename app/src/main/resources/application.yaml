@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: dbdive
+  datasource:
+    url: jdbc:mysql://localhost:3603/
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root1
+    password: PASSWORD
