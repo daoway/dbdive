@@ -10,6 +10,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.graphml.GraphMLExporter;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -32,7 +33,7 @@ public class GraphOperations {
 		try (var writer = new FileWriter(outFileName)) {
 			exporter.exportGraph(dbGraph, writer);
 		}
-		catch (Exception exception) {
+		catch (IOException exception) {
 			log.error("Error : ", exception);
 		}
 	}

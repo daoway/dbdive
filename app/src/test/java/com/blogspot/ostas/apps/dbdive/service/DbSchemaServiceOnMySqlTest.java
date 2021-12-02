@@ -20,13 +20,13 @@ import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.IS
 @Slf4j
 @Sql(value = { "/mysqlsampledatabase.sql" }, config = @SqlConfig(transactionMode = ISOLATED),
 		executionPhase = BEFORE_TEST_METHOD)
-public class MySqlDbSchemaTest implements MySqlContainerTests {
+public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
-	private JdbcMetadataServiceImpl jdbcMetadataService;
+	private DbSchemaService dbSchemaService;
 
 	@Test
 	void schemaExistsAndHealthy() {
@@ -39,13 +39,13 @@ public class MySqlDbSchemaTest implements MySqlContainerTests {
 	public void listAllTables() {
 		var expected = new String[] { "customers", "employees", "offices", "orderdetails", "orders", "payments",
 				"productlines", "products" };
-		var actual = jdbcMetadataService.getDbSchema(DATABASE_NAME).getTables().keySet();
+		var actual = dbSchemaService.getDbSchema(DATABASE_NAME).getTables().keySet();
 		assertThat(actual).containsExactlyInAnyOrder(expected);
 	}
 
 	@Test
 	public void exportGraphML() {
-		var dbSchema = jdbcMetadataService.getDbSchema(DATABASE_NAME);
+		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
 		var graph = GraphOperations.getDbSchemaAsGraph(dbSchema);
 		var exportedFile = new File("classic.graphml");
 		exportAsGraphML(graph, exportedFile.getName());

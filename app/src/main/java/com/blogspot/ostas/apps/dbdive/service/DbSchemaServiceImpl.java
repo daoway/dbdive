@@ -25,7 +25,7 @@ import static org.springframework.jdbc.support.JdbcUtils.extractDatabaseMetaData
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JdbcMetadataServiceImpl implements JdbcMetadataService {
+public class DbSchemaServiceImpl implements DbSchemaService {
 
 	private final DataSource dataSource;
 
