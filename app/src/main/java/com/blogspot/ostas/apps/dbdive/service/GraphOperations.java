@@ -16,6 +16,13 @@ import java.io.IOException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GraphOperations {
 
+	private static final GraphMLExporter<DbTable, DefaultEdge> exporter;
+	static {
+		exporter = new GraphMLExporter<>();
+		exporter.setExportVertexLabels(true);
+		exporter.setExportEdgeLabels(true);
+	}
+
 	public static DefaultDirectedGraph<DbTable, DefaultEdge> getDbSchemaAsGraph(DbSchema db) {
 		var dbGraph = new DefaultDirectedGraph<DbTable, DefaultEdge>(DefaultEdge.class);
 		db.getTables().forEach((name, dbTable) -> dbGraph.addVertex(dbTable));
@@ -27,9 +34,6 @@ public class GraphOperations {
 	}
 
 	public static void exportAsGraphML(DefaultDirectedGraph<DbTable, DefaultEdge> dbGraph, String outFileName) {
-		var exporter = new GraphMLExporter<DbTable, DefaultEdge>();
-		exporter.setExportVertexLabels(true);
-		exporter.setExportEdgeLabels(true);
 		try (var writer = new FileWriter(outFileName)) {
 			exporter.exportGraph(dbGraph, writer);
 		}

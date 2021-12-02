@@ -166,6 +166,8 @@ dependencies {
     testImplementation 'org.testcontainers:mysql'
 
     testImplementation 'org.dbunit:dbunit:2.7.2'
+
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1'
 }
 
 ext {
