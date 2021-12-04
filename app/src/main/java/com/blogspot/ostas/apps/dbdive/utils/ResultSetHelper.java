@@ -1,7 +1,7 @@
 package com.blogspot.ostas.apps.dbdive.utils;
 
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
-import com.blogspot.ostas.apps.dbdive.model.DbTableColumn;
+import com.blogspot.ostas.apps.dbdive.model.DbColumn;
 import com.blogspot.ostas.apps.dbdive.model.ForeignKey;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,11 +35,11 @@ public final class ResultSetHelper {
 	}
 
 	@SneakyThrows
-	public static DbTableColumn extractColumnInfo(ResultSet resultSet) {
+	public static DbColumn extractColumnInfo(ResultSet resultSet) {
 		var name = resultSet.getString("COLUMN_NAME");
 		var type = resultSet.getString("TYPE_NAME");
 		var size = resultSet.getString("COLUMN_SIZE");
-		return new DbTableColumn(name, type, size);
+		return new DbColumn(name, type, size);
 	}
 
 }

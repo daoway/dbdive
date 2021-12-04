@@ -1,6 +1,12 @@
 package com.blogspot.ostas.apps.dbdive.service;
 
 import com.blogspot.ostas.apps.dbdive.model.DbSchema;
+import com.blogspot.ostas.apps.dbdive.model.DbTable;
+import com.blogspot.ostas.apps.dbdive.model.DbColumn;
+import com.blogspot.ostas.apps.dbdive.service.xml.DbColumnMixIn;
+import com.blogspot.ostas.apps.dbdive.service.xml.DbSchemaMixIn;
+import com.blogspot.ostas.apps.dbdive.service.xml.DbTableMixIn;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.AccessLevel;
@@ -12,15 +18,18 @@ import java.io.File;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class XmlOperations {
 
-	private static final XmlMapper xmlMapper;
+	private static final ObjectMapper objectMapper;
 	static {
-		xmlMapper = new XmlMapper();
-		xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		objectMapper = new XmlMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		objectMapper.addMixIn(DbSchema.class, DbSchemaMixIn.class);
+		objectMapper.addMixIn(DbTable.class, DbTableMixIn.class);
+		objectMapper.addMixIn(DbColumn.class, DbColumnMixIn.class);
 	}
 
 	@SneakyThrows
 	public static void exportSchemaAsXML(DbSchema dbSchema, String fileName) {
-		xmlMapper.writeValue(new File(fileName), dbSchema);
+		objectMapper.writeValue(new File(fileName), dbSchema);
 	}
 
 }

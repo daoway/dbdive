@@ -11,7 +11,7 @@ public class DbTable {
 
 	private String name;
 
-	private List<DbTableColumn> columns;
+	private List<DbColumn> columns;
 
 	private List<PrimaryKey> primaryKeys;
 

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode
 @AllArgsConstructor
-public class DbTableColumn {
+public class DbColumn {
 
 	private String name;
 
