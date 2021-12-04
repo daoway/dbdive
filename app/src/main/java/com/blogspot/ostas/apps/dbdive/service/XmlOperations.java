@@ -3,9 +3,13 @@ package com.blogspot.ostas.apps.dbdive.service;
 import com.blogspot.ostas.apps.dbdive.model.DbSchema;
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
 import com.blogspot.ostas.apps.dbdive.model.DbColumn;
+import com.blogspot.ostas.apps.dbdive.model.ForeignKey;
+import com.blogspot.ostas.apps.dbdive.model.PrimaryKey;
 import com.blogspot.ostas.apps.dbdive.service.xml.DbColumnMixIn;
 import com.blogspot.ostas.apps.dbdive.service.xml.DbSchemaMixIn;
 import com.blogspot.ostas.apps.dbdive.service.xml.DbTableMixIn;
+import com.blogspot.ostas.apps.dbdive.service.xml.ForeignKeyMixIn;
+import com.blogspot.ostas.apps.dbdive.service.xml.PrimaryKeyMixIn;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -25,6 +29,8 @@ public class XmlOperations {
 		objectMapper.addMixIn(DbSchema.class, DbSchemaMixIn.class);
 		objectMapper.addMixIn(DbTable.class, DbTableMixIn.class);
 		objectMapper.addMixIn(DbColumn.class, DbColumnMixIn.class);
+		objectMapper.addMixIn(PrimaryKey.class, PrimaryKeyMixIn.class);
+		objectMapper.addMixIn(ForeignKey.class, ForeignKeyMixIn.class);
 	}
 
 	@SneakyThrows

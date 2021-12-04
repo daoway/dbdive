@@ -4,15 +4,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Data;
 
 @Data
-public class DbColumnMixIn {
+public class PrimaryKeyMixIn {
 
 	@JacksonXmlProperty(isAttribute = true)
 	private String name;
-
-	@JacksonXmlProperty(isAttribute = true)
-	private String type;
-
-	@JacksonXmlProperty(isAttribute = true)
-	private String size;
 
 }
