@@ -30,7 +30,7 @@ public class SqlGenServiceTest {
 	@Test
 	void deleteAllFromTable() {
 		var tableName = "parent1";
-		var deleteSql = sqlGenService.deleteAllFromTable(tableName);
+		var deleteSql = sqlGenService.deleteAllSql(tableName);
 		assertThat(deleteSql).isEqualTo("DELETE FROM parent1");
 	}
 

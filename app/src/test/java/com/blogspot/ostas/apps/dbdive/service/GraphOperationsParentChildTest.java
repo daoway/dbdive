@@ -2,6 +2,7 @@ package com.blogspot.ostas.apps.dbdive.service;
 
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
+import com.blogspot.ostas.apps.dbdive.service.template.SqlGenService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 
 	@Autowired
 	private DbSchemaService dbSchemaService;
+
+	@Autowired
+	private SqlGenService sqlGenService;
 
 	@BeforeAll
 	void beforeAll() {
@@ -100,6 +104,16 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 		var tablesSequence = path.stream().map(DbTable::getName).collect(Collectors.toList());
 		assertThat(tablesSequence).containsExactly("child10", "child9", "child8", "child7", "child6", "child5",
 				"child4", "child3", "child2", "child1", "parent1");
+	}
+
+	@Test
+	public void removalSequenceSqlScript() {
+		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
+		var dbGraph = GraphOperations.getDbSchemaAsGraph(dbSchema);
+		var path = GraphOperations.removalSequence(dbGraph);
+		var tablesSequence = path.stream().map(DbTable::getName).collect(Collectors.toList());
+		var script = sqlGenService.removeAllDataSqlScript(tablesSequence);
+		assertThat(script).isNotBlank();
 	}
 
 }
