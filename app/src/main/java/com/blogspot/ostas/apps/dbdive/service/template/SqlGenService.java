@@ -11,10 +11,16 @@ public class SqlGenService {
 
 	private final TemplateService templateService;
 
-	public String getDeleteSql(DeleteInfo deleteInfo) {
+	public String deleteSql(DeleteInfo deleteInfo) {
 		var placeholders = new HashMap<String, Object>();
 		placeholders.put("deleteInfo", deleteInfo);
 		return this.templateService.populateTemplate("delete.vm", placeholders);
+	}
+
+	public String deleteAllFromTable(String tableName) {
+		var placeholders = new HashMap<String, Object>();
+		placeholders.put("tableName", tableName);
+		return this.templateService.populateTemplate("delete-all.vm", placeholders);
 	}
 
 }
