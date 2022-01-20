@@ -1,1 +1,1 @@
-DELETE FROM $table
+DELETE FROM $deleteInfo.table where $deleteInfo.column=$deleteInfo.columnValue

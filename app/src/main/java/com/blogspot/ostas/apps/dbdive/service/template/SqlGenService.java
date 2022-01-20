@@ -1,6 +1,5 @@
-package com.blogspot.ostas.apps.dbdive.service;
+package com.blogspot.ostas.apps.dbdive.service.template;
 
-import com.blogspot.ostas.apps.dbdive.service.template.TemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +11,9 @@ public class SqlGenService {
 
 	private final TemplateService templateService;
 
-	public String getDeleteSql(String tableName) {
+	public String getDeleteSql(DeleteInfo deleteInfo) {
 		var placeholders = new HashMap<String, Object>();
-		placeholders.put("table", tableName);
+		placeholders.put("deleteInfo", deleteInfo);
 		return this.templateService.populateTemplate("delete.vm", placeholders);
 	}
 
