@@ -18,7 +18,7 @@ import org.jgrapht.nio.graphml.GraphMLExporter;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class GraphOperations {
 
 		var allDirectedPaths = new AllDirectedPaths<>(dbGraph);
 		var possiblePathList = allDirectedPaths.getAllPaths(from, to, false, Integer.MAX_VALUE);
-		if(possiblePathList.size()!=1){
+		if (possiblePathList.size() != 1) {
 			throw new RuntimeException("not implemented yet");
 		}
 		var path = possiblePathList.get(0).getVertexList();
@@ -109,10 +109,9 @@ public class GraphOperations {
 		return path;
 	}
 
-	public static Set<DbTable> cycles(DefaultDirectedGraph<DbTable,DefaultEdge> graph){
+	public static Set<DbTable> cycles(DefaultDirectedGraph<DbTable, DefaultEdge> graph) {
 		var cycleDetector = new CycleDetector<>(graph);
 		return cycleDetector.findCycles();
 	}
-
 
 }

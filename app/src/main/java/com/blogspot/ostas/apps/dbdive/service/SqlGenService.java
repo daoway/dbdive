@@ -9,10 +9,13 @@ import java.util.HashMap;
 @Component
 @RequiredArgsConstructor
 public class SqlGenService {
-    private final TemplateService templateService;
-    public String getDeleteSql(String tableName) {
-        var placeholders = new HashMap<String, Object>();
-        placeholders.put("table", tableName);
-        return templateService.populateTemplate("delete.vm", placeholders);
-    }
+
+	private final TemplateService templateService;
+
+	public String getDeleteSql(String tableName) {
+		var placeholders = new HashMap<String, Object>();
+		placeholders.put("table", tableName);
+		return this.templateService.populateTemplate("delete.vm", placeholders);
+	}
+
 }

@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("PMD.UnusedPrivateField")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = VelocityConfig.class)
 public class SqlGenServiceTest {

@@ -3,35 +3,46 @@ package com.blogspot.ostas.apps.dbdive.service;
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.domain.Customer;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 
+import javax.sql.DataSource;
 import java.io.File;
 
 import static com.blogspot.ostas.apps.dbdive.service.GraphOperations.exportAsGraphML;
 import static com.blogspot.ostas.apps.dbdive.service.XmlOperations.deserializeFromXml;
 import static com.blogspot.ostas.apps.dbdive.service.XmlOperations.exportSchemaAsXML;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
 @SpringBootTest
 @DirtiesContext
-@Sql(value = { "/mysqlsampledatabase.sql" }, config = @SqlConfig(transactionMode = ISOLATED),
-		executionPhase = BEFORE_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
+
+	@Autowired
+	public DataSource dataSource;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	private DbSchemaService dbSchemaService;
+
+	@BeforeAll
+	void beforeAll() {
+		var populator = new ResourceDatabasePopulator();
+		populator.setScripts(new ClassPathResource("/mysqlsampledatabase.sql"));
+		DatabasePopulatorUtils.execute(populator, dataSource);
+	}
 
 	@Test
 	void schemaExistsAndHealthy() {

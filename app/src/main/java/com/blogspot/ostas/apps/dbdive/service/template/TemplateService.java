@@ -15,7 +15,7 @@ public class TemplateService {
 	private final VelocityEngine velocityEngine;
 
 	public String populateTemplate(String templateName, Map<String, Object> placeholders) {
-		var template = velocityEngine.getTemplate(templateName);
+		var template = this.velocityEngine.getTemplate(templateName);
 		var context = new VelocityContext();
 		placeholders.forEach(context::put);
 		var templateResultWriter = new StringWriter();

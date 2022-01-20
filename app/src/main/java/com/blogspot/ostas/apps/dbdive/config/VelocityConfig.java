@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class VelocityConfig {
-    @Bean
-    public VelocityEngine velocityEngine(){
-        var velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-        velocityEngine.init();
-        return velocityEngine;
-    }
+
+	@Bean
+	public VelocityEngine velocityEngine() {
+		var velocityEngine = new VelocityEngine();
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		velocityEngine.init();
+		return velocityEngine;
+	}
+
 }

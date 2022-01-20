@@ -2,15 +2,20 @@ package com.blogspot.ostas.apps.dbdive.service;
 
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,16 +24,31 @@ import static org.springframework.dao.support.DataAccessUtils.singleResult;
 
 @SpringBootTest
 @DirtiesContext
-@Sql(scripts = { "/sql/one-parent-many-children.sql" }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-		config = @SqlConfig(errorMode = SqlConfig.ErrorMode.CONTINUE_ON_ERROR))
-@Sql(scripts = "/sql/one-parent-many-children-cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GraphOperationsParentChildTest implements MySqlContainerTests {
+
+	@Autowired
+	public DataSource dataSource;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	private DbSchemaService dbSchemaService;
+
+	@BeforeAll
+	void beforeAll() {
+		var populator = new ResourceDatabasePopulator();
+		populator.setScripts(new ClassPathResource("/sql/one-parent-many-children.sql"));
+		DatabasePopulatorUtils.execute(populator, dataSource);
+	}
+
+	@AfterAll
+	void afterAll() {
+		var populator = new ResourceDatabasePopulator();
+		populator.setScripts(new ClassPathResource("/sql/one-parent-many-children-cleanup.sql"));
+		DatabasePopulatorUtils.execute(populator, dataSource);
+	}
 
 	@Test
 	void schemaExistsAndHealthy() {
