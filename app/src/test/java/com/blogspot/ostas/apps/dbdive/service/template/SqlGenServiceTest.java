@@ -24,7 +24,7 @@ public class SqlGenServiceTest {
 	public void deleteSql() {
 		var deleteInfo = DeleteInfo.builder().table("parent1").column("parent1_id").columnValue(100500).build();
 		var deleteSql = sqlGenService.getDeleteSql(deleteInfo);
-		assertThat(deleteSql).isEqualTo("DELETE FROM parent1 where parent1_id=100500");
+		assertThat(deleteSql).isEqualTo("DELETE FROM parent1 WHERE parent1_id=100500");
 	}
 
 }
