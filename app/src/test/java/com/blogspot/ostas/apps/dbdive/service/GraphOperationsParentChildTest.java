@@ -9,14 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,18 +38,17 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 	@Autowired
 	private SqlGenService sqlGenService;
 
+	@Autowired
+	private SqlScriptRunner scriptRunner;
+
 	@BeforeAll
 	void beforeAll() {
-		var populator = new ResourceDatabasePopulator();
-		populator.setScripts(new ClassPathResource("/sql/one-parent-many-children.sql"));
-		DatabasePopulatorUtils.execute(populator, dataSource);
+		scriptRunner.execSqlScriptFromClasspathFile("/sql/one-parent-many-children.sql");
 	}
 
 	@AfterAll
 	void afterAll() {
-		var populator = new ResourceDatabasePopulator();
-		populator.setScripts(new ClassPathResource("/sql/one-parent-many-children-cleanup.sql"));
-		DatabasePopulatorUtils.execute(populator, dataSource);
+		scriptRunner.execSqlScriptFromClasspathFile("/sql/one-parent-many-children-cleanup.sql");
 	}
 
 	@Test
@@ -75,9 +72,13 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 		// when
 		deleteSequence.forEach(deleteSql -> jdbcTemplate.execute(deleteSql));
 		// then
-		var sql = "SELECT parent1_id FROM parent1";
-		var id = singleResult(jdbcTemplate.query(sql, SingleColumnRowMapper.newInstance(Integer.class)));
+		Integer id = getValueOfColumn("parent1", "parent1_id");
 		assertThat(id).isNull();
+	}
+
+	private Integer getValueOfColumn(String table, String column) {
+		var sql = String.format("SELECT %s FROM %s", column, table);
+		return singleResult(jdbcTemplate.query(sql, SingleColumnRowMapper.newInstance(Integer.class)));
 	}
 
 	@Test
@@ -113,7 +114,10 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 		var path = GraphOperations.removalSequence(dbGraph);
 		var tablesSequence = path.stream().map(DbTable::getName).collect(Collectors.toList());
 		var script = sqlGenService.removeAllDataSqlScript(tablesSequence);
-		assertThat(script).isNotBlank();
+		scriptRunner.execSqlScript(script);
+		var schemaCounts = new ArrayList<>();
+		tablesSequence.forEach((table) -> schemaCounts.add(scriptRunner.count(table)));
+		assertThat(schemaCounts).containsOnly(0);
 	}
 
 }

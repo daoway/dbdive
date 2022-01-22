@@ -8,11 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
@@ -37,11 +34,12 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 	@Autowired
 	private DbSchemaService dbSchemaService;
 
+	@Autowired
+	private SqlScriptRunner scriptRunner;
+
 	@BeforeAll
 	void beforeAll() {
-		var populator = new ResourceDatabasePopulator();
-		populator.setScripts(new ClassPathResource("/mysqlsampledatabase.sql"));
-		DatabasePopulatorUtils.execute(populator, dataSource);
+		scriptRunner.execSqlScriptFromClasspathFile("/mysqlsampledatabase.sql");
 	}
 
 	@Test
