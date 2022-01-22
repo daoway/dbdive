@@ -15,4 +15,7 @@ public class DbColumnMixIn {
 	@JacksonXmlProperty(isAttribute = true)
 	private String size;
 
+	@JacksonXmlProperty(isAttribute = true)
+	private Class<?> javaType;
+
 }

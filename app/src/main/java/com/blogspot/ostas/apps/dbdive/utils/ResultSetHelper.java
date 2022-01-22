@@ -1,8 +1,8 @@
 package com.blogspot.ostas.apps.dbdive.utils;
 
-import com.blogspot.ostas.apps.dbdive.model.DbTable;
 import com.blogspot.ostas.apps.dbdive.model.DbColumn;
 import com.blogspot.ostas.apps.dbdive.model.DbForeignKey;
+import com.blogspot.ostas.apps.dbdive.model.DbTable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -39,7 +39,7 @@ public final class ResultSetHelper {
 		var name = resultSet.getString("COLUMN_NAME");
 		var type = resultSet.getString("TYPE_NAME");
 		var size = resultSet.getString("COLUMN_SIZE");
-		return new DbColumn(name, type, size);
+		return DbColumn.builder().name(name).type(type).size(size).build();
 	}
 
 }

@@ -1,12 +1,14 @@
 package com.blogspot.ostas.apps.dbdive.service;
 
-import com.blogspot.ostas.apps.dbdive.model.DbSchema;
-import com.blogspot.ostas.apps.dbdive.model.DbTable;
+import com.blogspot.ostas.apps.dbdive.model.DbColumn;
 import com.blogspot.ostas.apps.dbdive.model.DbForeignKey;
 import com.blogspot.ostas.apps.dbdive.model.DbPrimaryKey;
+import com.blogspot.ostas.apps.dbdive.model.DbSchema;
+import com.blogspot.ostas.apps.dbdive.model.DbTable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -28,6 +30,8 @@ import static org.springframework.jdbc.support.JdbcUtils.extractDatabaseMetaData
 public class DbSchemaServiceImpl implements DbSchemaService {
 
 	private final DataSource dataSource;
+
+	private final JdbcTemplate jdbcTemplate;
 
 	@SneakyThrows
 	private Map<String, DbTable> getAllTables(String schemaName) {
@@ -114,11 +118,26 @@ public class DbSchemaServiceImpl implements DbSchemaService {
 				table.setColumns(new ArrayList<>());
 				while (resultSet.next()) {
 					var dbColumn = extractColumnInfo(resultSet);
+					setColumnJavaType(table, dbColumn);
 					table.getColumns().add(dbColumn);
 				}
 			}
 			return null;
 		});
+	}
+
+	private void setColumnJavaType(DbTable table, DbColumn dbColumn) {
+		this.jdbcTemplate.query(String.format("select %s from %s where 1=2", dbColumn.getName(), table.getName()),
+				(rs) -> {
+					var resultSetMetaData = rs.getMetaData();
+					try {
+						dbColumn.setJavaType(Class.forName(resultSetMetaData.getColumnClassName(1)));
+					}
+					catch (ClassNotFoundException exception) {
+						log.error("Error casting class : ", exception);
+					}
+					return 0;
+				});
 	}
 
 	private void setPrimaryKeys(DbSchema schema, String schemaName) {
