@@ -2,10 +2,15 @@ package com.blogspot.ostas.apps.dbdive.service.template;
 
 import com.blogspot.ostas.apps.dbdive.model.DbColumn;
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,20 +41,6 @@ public class SqlGenService {
 		return script.toString();
 	}
 
-	@Data
-	public static class ColumnDescription {
-
-		private String name;
-
-		private String javaType;
-
-		public ColumnDescription(DbColumn dbColumn) {
-			this.name = dbColumn.getName();
-			this.javaType = dbColumn.getJavaType().getSimpleName();
-		}
-
-	}
-
 	public String generateJavaClassForTable(DbTable dbTable, String packageName) {
 		var placeholders = new HashMap<String, Object>();
 		placeholders.put("packageName", packageName);
@@ -60,12 +51,25 @@ public class SqlGenService {
 
 		var nonJavaLangImports = new StringBuffer();
 		var typesToBeImported = dbTable.getColumns().stream().map(DbColumn::getJavaType)
-				.filter(javaType -> !javaType.getPackageName().startsWith("java.lang")).collect(Collectors.toList());
+				.filter((javaType) -> !javaType.getPackageName().startsWith("java.lang")).collect(Collectors.toList());
 		typesToBeImported
-				.forEach(type -> nonJavaLangImports.append(String.format("import %s;%n", type.getCanonicalName())));
+				.forEach((type) -> nonJavaLangImports.append(String.format("import %s;%n", type.getCanonicalName())));
 		placeholders.put("nonJavaLangImports", nonJavaLangImports);
 
 		return this.templateService.populateTemplate("class-template.vm", placeholders);
+	}
+
+	public String writeTablePojo(DbTable dbTable, String packageName) throws IOException {
+		var clazz = this.generateJavaClassForTable(dbTable, packageName);
+		var packageAsPAth = ClassUtils.convertClassNameToResourcePath(packageName);
+		var fileName = capitalize(dbTable.getName()) + ".java";
+		final var filePath = new File("src/main/java/" + packageAsPAth);
+		if (!filePath.exists()) {
+			filePath.mkdirs();
+		}
+		var absolutePath = filePath + "/" + fileName;
+		Files.write(Paths.get(absolutePath), clazz.getBytes(StandardCharsets.UTF_8));
+		return absolutePath;
 	}
 
 }

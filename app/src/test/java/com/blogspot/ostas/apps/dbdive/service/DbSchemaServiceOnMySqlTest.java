@@ -16,16 +16,11 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static com.blogspot.ostas.apps.dbdive.service.GraphOperations.exportAsGraphML;
 import static com.blogspot.ostas.apps.dbdive.service.XmlOperations.deserializeFromXml;
 import static com.blogspot.ostas.apps.dbdive.service.XmlOperations.exportSchemaAsXML;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.util.StringUtils.capitalize;
 
 @Slf4j
 @SpringBootTest
@@ -114,18 +109,13 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 	}
 
 	@Test
+	@SneakyThrows
 	public void generateCustomerClassByTableName() {
 		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
 		var dbTable = dbSchema.getTables().get("customers");
-		var fileName = capitalize(dbTable.getName()) + ".java";
-		var clazz = sqlGenService.generateJavaClassForTable(dbTable, "xxx");
-		try {
-			Files.write(Paths.get(fileName), clazz.getBytes(StandardCharsets.UTF_8));
-		}
-		catch (IOException ioException) {
-			log.error("Error : ", ioException);
-		}
-		assertThat(new File(fileName).exists()).isTrue();
+		var packageName = "com.blogspot.ostas.apps.dbdive.generated.domain";
+		var absolutePath = sqlGenService.writeTablePojo(dbTable, packageName);
+		assertThat(new File(absolutePath).exists()).isTrue();
 	}
 
 }
