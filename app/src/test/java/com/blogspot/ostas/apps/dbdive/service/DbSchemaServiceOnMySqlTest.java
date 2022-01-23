@@ -3,7 +3,6 @@ package com.blogspot.ostas.apps.dbdive.service;
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.domain.Customer;
 import com.blogspot.ostas.apps.dbdive.service.template.SqlGenService;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,6 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 	}
 
 	@Test
-	@SneakyThrows
 	public void serializeDbSchemaToXml() {
 		var exportedFile = new File("classic.xml");
 		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
@@ -109,7 +107,6 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 	}
 
 	@Test
-	@SneakyThrows
 	public void generateCustomerClassByTableName() {
 		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
 		var dbTable = dbSchema.getTables().get("customers");
