@@ -168,7 +168,7 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:mysql'
     testImplementation 'org.dbunit:dbunit:2.7.2'
-
+    implementation 'org.jeasy:easy-random-core:4.0.0'
 }
 
 ext {
