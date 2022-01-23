@@ -3,11 +3,11 @@ package com.blogspot.ostas.apps.dbdive.service.template;
 import com.blogspot.ostas.apps.dbdive.model.DbColumn;
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,7 +59,8 @@ public class SqlGenService {
 		return this.templateService.populateTemplate("class-template.vm", placeholders);
 	}
 
-	public String writeTablePojo(DbTable dbTable, String packageName) throws IOException {
+	@SneakyThrows
+	public String writeTablePojo(DbTable dbTable, String packageName) {
 		var clazz = this.generateJavaClassForTable(dbTable, packageName);
 		var packageAsPAth = ClassUtils.convertClassNameToResourcePath(packageName);
 		var fileName = capitalize(dbTable.getName()) + ".java";

@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -118,6 +119,17 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 		var schemaCounts = new ArrayList<>();
 		tablesSequence.forEach((table) -> schemaCounts.add(scriptRunner.count(table)));
 		assertThat(schemaCounts).containsOnly(0);
+	}
+
+	@Test
+	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") // pmd doesn't see assert
+	public void generateAllPojos() {
+		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
+		var packageName = "com.blogspot.ostas.apps.dbdive.generated.domain";
+		dbSchema.getTables().values().forEach(dbTable -> {
+			var absolutePath = sqlGenService.writeTablePojo(dbTable, packageName);
+			assertThat(new File(absolutePath).exists()).isTrue();
+		});
 	}
 
 }
