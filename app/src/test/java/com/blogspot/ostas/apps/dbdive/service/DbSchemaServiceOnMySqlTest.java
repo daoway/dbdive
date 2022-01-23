@@ -115,4 +115,15 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 		assertThat(new File(absolutePath).exists()).isTrue();
 	}
 
+	@Test
+	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") // pmd doesn't see assert
+	public void generateAllPojos() {
+		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
+		var packageName = "com.blogspot.ostas.apps.dbdive.generated.domain.classic";
+		dbSchema.getTables().values().forEach(dbTable -> {
+			var absolutePath = generatorService.writeTablePojo(dbTable, packageName);
+			assertThat(new File(absolutePath).exists()).isTrue();
+		});
+	}
+
 }

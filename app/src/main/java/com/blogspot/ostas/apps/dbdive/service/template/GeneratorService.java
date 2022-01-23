@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.util.StringUtils.capitalize;
+import static com.blogspot.ostas.apps.dbdive.utils.StringUtils.getClassNameFromTable;
 
 @Component
 @RequiredArgsConstructor
@@ -44,14 +44,14 @@ public class GeneratorService {
 	public String generateJavaClassForTable(DbTable dbTable, String packageName) {
 		var placeholders = new HashMap<String, Object>();
 		placeholders.put("packageName", packageName);
-		placeholders.put("className", capitalize(dbTable.getName()));
+		placeholders.put("className", getClassNameFromTable(dbTable.getName()));
 
 		placeholders.put("columns",
 				dbTable.getColumns().stream().map(ColumnDescription::new).collect(Collectors.toList()));
 
 		var nonJavaLangImports = new StringBuffer();
 		var typesToBeImported = dbTable.getColumns().stream().map(DbColumn::getJavaType)
-				.filter((javaType) -> !javaType.getPackageName().startsWith("java.lang")).collect(Collectors.toList());
+				.filter((javaType) -> !javaType.getPackageName().startsWith("java.lang")).collect(Collectors.toSet());
 		typesToBeImported
 				.forEach((type) -> nonJavaLangImports.append(String.format("import %s;%n", type.getCanonicalName())));
 		placeholders.put("nonJavaLangImports", nonJavaLangImports);
@@ -63,7 +63,7 @@ public class GeneratorService {
 	public String writeTablePojo(DbTable dbTable, String packageName) {
 		var clazz = this.generateJavaClassForTable(dbTable, packageName);
 		var packageAsPAth = ClassUtils.convertClassNameToResourcePath(packageName);
-		var fileName = capitalize(dbTable.getName()) + ".java";
+		var fileName = getClassNameFromTable(dbTable.getName()) + ".java";
 		final var filePath = new File("src/main/java/" + packageAsPAth);
 		if (!filePath.exists()) {
 			filePath.mkdirs();

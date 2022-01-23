@@ -1,10 +1,9 @@
 package com.blogspot.ostas.apps.dbdive.service.template;
 
 import com.blogspot.ostas.apps.dbdive.model.DbColumn;
-import com.google.common.base.CaseFormat;
 import lombok.Data;
 
-import java.util.Locale;
+import static com.blogspot.ostas.apps.dbdive.utils.StringUtils.underscoreToCamelCase;
 
 @Data
 public class ColumnDescription {
@@ -14,12 +13,8 @@ public class ColumnDescription {
 	private String javaType;
 
 	public ColumnDescription(DbColumn dbColumn) {
-		this.name = toCamelCase(dbColumn.getName().toLowerCase(Locale.ROOT));
+		this.name = underscoreToCamelCase(dbColumn.getName());
 		this.javaType = dbColumn.getJavaType().getSimpleName();
-	}
-
-	public static String toCamelCase(String columnName) {
-		return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, columnName);
 	}
 
 }
