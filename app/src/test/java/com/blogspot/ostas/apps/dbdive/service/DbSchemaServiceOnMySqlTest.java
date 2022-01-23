@@ -2,7 +2,7 @@ package com.blogspot.ostas.apps.dbdive.service;
 
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.domain.Customer;
-import com.blogspot.ostas.apps.dbdive.service.template.SqlGenService;
+import com.blogspot.ostas.apps.dbdive.service.template.GeneratorService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 	private SqlScriptRunner scriptRunner;
 
 	@Autowired
-	private SqlGenService sqlGenService;
+	private GeneratorService generatorService;
 
 	@BeforeAll
 	void beforeAll() {
@@ -111,7 +111,7 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
 		var dbTable = dbSchema.getTables().get("customers");
 		var packageName = "com.blogspot.ostas.apps.dbdive.generated.domain";
-		var absolutePath = sqlGenService.writeTablePojo(dbTable, packageName);
+		var absolutePath = generatorService.writeTablePojo(dbTable, packageName);
 		assertThat(new File(absolutePath).exists()).isTrue();
 	}
 

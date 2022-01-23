@@ -2,7 +2,7 @@ package com.blogspot.ostas.apps.dbdive.service;
 
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.model.DbTable;
-import com.blogspot.ostas.apps.dbdive.service.template.SqlGenService;
+import com.blogspot.ostas.apps.dbdive.service.template.GeneratorService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 	private DbSchemaService dbSchemaService;
 
 	@Autowired
-	private SqlGenService sqlGenService;
+	private GeneratorService generatorService;
 
 	@Autowired
 	private SqlScriptRunner scriptRunner;
@@ -114,7 +114,7 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 		var dbGraph = GraphOperations.getDbSchemaAsGraph(dbSchema);
 		var path = GraphOperations.removalSequence(dbGraph);
 		var tablesSequence = path.stream().map(DbTable::getName).collect(Collectors.toList());
-		var script = sqlGenService.removeAllDataSqlScript(tablesSequence);
+		var script = generatorService.removeAllDataSqlScript(tablesSequence);
 		scriptRunner.execSqlScript(script);
 		var schemaCounts = new ArrayList<>();
 		tablesSequence.forEach((table) -> schemaCounts.add(scriptRunner.count(table)));
@@ -127,7 +127,7 @@ public class GraphOperationsParentChildTest implements MySqlContainerTests {
 		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
 		var packageName = "com.blogspot.ostas.apps.dbdive.generated.domain";
 		dbSchema.getTables().values().forEach(dbTable -> {
-			var absolutePath = sqlGenService.writeTablePojo(dbTable, packageName);
+			var absolutePath = generatorService.writeTablePojo(dbTable, packageName);
 			assertThat(new File(absolutePath).exists()).isTrue();
 		});
 	}

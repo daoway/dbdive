@@ -12,10 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SuppressWarnings("PMD.UnusedPrivateField")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = VelocityConfig.class)
-public class SqlGenServiceTest {
+public class GeneratorServiceTest {
 
 	@SpyBean
-	private SqlGenService sqlGenService;
+	private GeneratorService generatorService;
 
 	@SpyBean
 	private TemplateService templateService;
@@ -23,14 +23,14 @@ public class SqlGenServiceTest {
 	@Test
 	public void deleteSql() {
 		var deleteInfo = DeleteInfo.builder().table("parent1").column("parent1_id").columnValue(100500).build();
-		var deleteSql = sqlGenService.deleteSql(deleteInfo);
+		var deleteSql = generatorService.deleteSql(deleteInfo);
 		assertThat(deleteSql).isEqualTo("DELETE FROM parent1 WHERE parent1_id=100500");
 	}
 
 	@Test
 	void deleteAllFromTable() {
 		var tableName = "parent1";
-		var deleteSql = sqlGenService.deleteAllSql(tableName);
+		var deleteSql = generatorService.deleteAllSql(tableName);
 		assertThat(deleteSql).isEqualTo("DELETE FROM parent1");
 	}
 

@@ -19,7 +19,7 @@ import static org.springframework.util.StringUtils.capitalize;
 
 @Component
 @RequiredArgsConstructor
-public class SqlGenService {
+public class GeneratorService {
 
 	private final TemplateService templateService;
 
