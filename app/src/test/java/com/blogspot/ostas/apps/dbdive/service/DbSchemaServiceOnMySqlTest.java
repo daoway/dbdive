@@ -2,7 +2,9 @@ package com.blogspot.ostas.apps.dbdive.service;
 
 import com.blogspot.ostas.apps.dbdive.MySqlContainerTests;
 import com.blogspot.ostas.apps.dbdive.domain.Customer;
+import com.blogspot.ostas.apps.dbdive.service.template.SqlGenService;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -14,12 +16,18 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static com.blogspot.ostas.apps.dbdive.service.GraphOperations.exportAsGraphML;
 import static com.blogspot.ostas.apps.dbdive.service.XmlOperations.deserializeFromXml;
 import static com.blogspot.ostas.apps.dbdive.service.XmlOperations.exportSchemaAsXML;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.util.StringUtils.capitalize;
 
+@Slf4j
 @SpringBootTest
 @DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -36,6 +44,9 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 
 	@Autowired
 	private SqlScriptRunner scriptRunner;
+
+	@Autowired
+	private SqlGenService sqlGenService;
 
 	@BeforeAll
 	void beforeAll() {
@@ -100,6 +111,21 @@ public class DbSchemaServiceOnMySqlTest implements MySqlContainerTests {
 		var cycles = GraphOperations.cycles(graph);
 		final var employees = cycles.iterator().next();
 		assertThat(employees.getName()).isEqualTo("employees");
+	}
+
+	@Test
+	public void generateCustomerClassByTableName() {
+		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
+		var dbTable = dbSchema.getTables().get("customers");
+		var fileName = capitalize(dbTable.getName()) + ".java";
+		var clazz = sqlGenService.generateJavaClassForTable(dbTable, "xxx");
+		try {
+			Files.write(Paths.get(fileName), clazz.getBytes(StandardCharsets.UTF_8));
+		}
+		catch (IOException ioException) {
+			log.error("Error : ", ioException);
+		}
+		assertThat(new File(fileName).exists()).isTrue();
 	}
 
 }

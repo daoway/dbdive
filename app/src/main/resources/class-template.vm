@@ -1,0 +1,11 @@
+package $packageName;
+
+import lombok.Data;
+$nonJavaLangImports
+
+@Data
+public class $className {
+#foreach($column in $columns)
+private $column.javaType $column.name;
+#end
+}
