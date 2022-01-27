@@ -60,11 +60,13 @@ class InsertPlanTest implements MySqlContainerTests {
 			var columns = dbTable.getColumns();
 			var comaSeparatedColumns = columns.stream().map(DbColumn::getName).collect(Collectors.joining(", "));
 			var rawRandomValues = columns.stream()
-					.map(dbColumn -> randomColumnValueAsString(dbColumn))
+					.map(this::randomColumnValueAsString)
 					.collect(Collectors.joining(", "));
 			var insertSql = String.format("insert into %s (%s) values (%s)", dbTable.getName(), comaSeparatedColumns,
 					rawRandomValues);
 			log.info(insertSql);
+			var exportedFK = dbTable.getExportedForeignKeys();
+			log.info(exportedFK!=null ? exportedFK.toString() : null);
 		});
 	}
 	EasyRandomParameters parameters = new EasyRandomParameters()
