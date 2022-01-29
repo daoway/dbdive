@@ -6,7 +6,10 @@ import javax.persistence.Entity;
 
 @Entity
 @Data
-public class AppUser extends Identifiable{
-    private String login;
-    private String password;
+public class AppUser extends Identifiable {
+
+	private String login;
+
+	private String password;
+
 }

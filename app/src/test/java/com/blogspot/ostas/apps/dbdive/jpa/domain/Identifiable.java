@@ -9,8 +9,12 @@ import javax.persistence.MappedSuperclass;
 
 @Data
 @MappedSuperclass
+@SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 public abstract class Identifiable {
-    @Id @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy = "uuid")
-    private String id;
+
+	@Id
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	private String id;
+
 }

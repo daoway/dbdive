@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Data
 public class InsertPlanItem {
-    private DbTable dbTable;
-    private Integer count;
+
+	private DbTable dbTable;
+
+	private Integer count;
+
 }

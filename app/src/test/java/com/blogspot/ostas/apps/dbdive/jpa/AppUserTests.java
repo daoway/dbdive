@@ -35,10 +35,9 @@ class AppUserTests implements OracleXeContainertTests {
 	@Autowired
 	private DataSource dataSource;
 
-
 	@SneakyThrows
 	@Test
-	void save(){
+	void save() {
 		var customer = new AppUser();
 		customer.setLogin("random1");
 		customerService.saveUser(customer);
@@ -48,9 +47,10 @@ class AppUserTests implements OracleXeContainertTests {
 
 	@AfterAll
 	@SneakyThrows
-	public void afterAll(){
+	public void afterAll() {
 		var dbConnection = dataSource.getConnection();
-		var connection = new DatabaseConnection(dbConnection, dbConnection.getSchema());//for oracle
+		var connection = new DatabaseConnection(dbConnection, dbConnection.getSchema());// for
+																						// oracle
 		var beforeDataSet = connection.createDataSet();
 		connection.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
 		FlatXmlDataSet.write(beforeDataSet, new FileOutputStream("schema-ums.xml"));

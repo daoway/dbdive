@@ -22,7 +22,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.Charset.forName;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest
@@ -48,39 +48,32 @@ class InsertPlanTest implements MySqlContainerTests {
 
 	@Test
 	void getInsert() {
-		var insertPlan = new InsertPlan();
 		var dbSchema = dbSchemaService.getDbSchema(DATABASE_NAME);
 		var dbGraph = GraphOperations.getDbSchemaAsGraph(dbSchema);
 		var insertSequence = GraphOperations.removalSequence(dbGraph);
 		Collections.reverse(insertSequence);
 		// todo
-		//		var insertByColumnName = "parent1_id";
-		//		var insertedValue = "300";
+		// var insertByColumnName = "parent1_id";
+		// var insertedValue = "300";
 		insertSequence.forEach(dbTable -> {
 			var columns = dbTable.getColumns();
 			var comaSeparatedColumns = columns.stream().map(DbColumn::getName).collect(Collectors.joining(", "));
-			var rawRandomValues = columns.stream()
-					.map(this::randomColumnValueAsString)
+			var rawRandomValues = columns.stream().map(this::randomColumnValueAsString)
 					.collect(Collectors.joining(", "));
 			var insertSql = String.format("insert into %s (%s) values (%s)", dbTable.getName(), comaSeparatedColumns,
 					rawRandomValues);
 			log.info(insertSql);
 			var exportedFK = dbTable.getExportedForeignKeys();
-			log.info(exportedFK!=null ? exportedFK.toString() : null);
+			log.info(exportedFK != null ? exportedFK.toString() : null);
 		});
+		assertThat(true).isTrue();
 	}
-	EasyRandomParameters parameters = new EasyRandomParameters()
-			.seed(123L)
-			.objectPoolSize(100)
-			.randomizationDepth(3)
-			.charset(StandardCharsets.UTF_8)
-			.timeRange(LocalTime.MIDNIGHT, LocalTime.NOON)
-			.dateRange(LocalDate.now(), LocalDate.now().plusDays(5))
-			.stringLengthRange(5, 50)
-			.collectionSizeRange(1, 10)
-			.scanClasspathForConcreteTypes(true)
-			.overrideDefaultInitialization(false)
-			.ignoreRandomizationErrors(true);
+
+	EasyRandomParameters parameters = new EasyRandomParameters().seed(123L).objectPoolSize(100).randomizationDepth(3)
+			.charset(StandardCharsets.UTF_8).timeRange(LocalTime.MIDNIGHT, LocalTime.NOON)
+			.dateRange(LocalDate.now(), LocalDate.now().plusDays(5)).stringLengthRange(5, 50).collectionSizeRange(1, 10)
+			.scanClasspathForConcreteTypes(true).overrideDefaultInitialization(false).ignoreRandomizationErrors(true);
+
 	EasyRandom generator = new EasyRandom(parameters);
 
 	private String randomColumnValueAsString(DbColumn dbColumn) {

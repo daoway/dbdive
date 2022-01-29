@@ -7,5 +7,7 @@ import java.util.List;
 
 @Data
 public class InsertPlan {
-    private List<InsertPlanItem> insert = new ArrayList<>();
+
+	private List<InsertPlanItem> insert = new ArrayList<>();
+
 }

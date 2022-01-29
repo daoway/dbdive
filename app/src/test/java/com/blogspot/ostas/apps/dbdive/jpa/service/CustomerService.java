@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-    private final AppUserRepository appUserRepository;
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public AppUser saveUser(AppUser appUser){
-        return appUserRepository.save(appUser);
-    }
+
+	private final AppUserRepository appUserRepository;
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public AppUser saveUser(AppUser appUser) {
+		return appUserRepository.save(appUser);
+	}
+
 }
