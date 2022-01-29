@@ -1,11 +1,31 @@
 create table parent1
 (
-    parent1_id int primary key
+    parent1_id int primary key,
+    parent1_column1 varchar(100),
+    parent1_column2 varchar(100),
+    parent1_column3 varchar(100),
+    parent1_column4 varchar(100),
+    parent1_column5 varchar(100),
+    parent1_column6 varchar(100),
+    parent1_column7 varchar(100),
+    parent1_column8 varchar(100),
+    parent1_column9 varchar(100),
+    parent1_column10 varchar(100)
 );
 
 create table child1
 (
     child1_id int primary key,
+    child1_column1 varchar(100),
+    child1_column2 varchar(100),
+    child1_column3 varchar(100),
+    child1_column4 varchar(100),
+    child1_column5 varchar(100),
+    child1_column6 varchar(100),
+    child1_column7 varchar(100),
+    child1_column8 varchar(100),
+    child1_column9 varchar(100),
+    child1_column10 varchar(100),
     CONSTRAINT `fk_1` FOREIGN KEY (`child1_id`) REFERENCES `parent1` (`parent1_id`)
 );
 
