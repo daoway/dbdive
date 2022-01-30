@@ -27,3 +27,6 @@ build
 /app/classic.graphml
 /app/classic.xml
 /app/classic.png
+/app/src/main/java/com/blogspot/ostas/apps/dbdive/generated/
+/.jpb/jpb-settings.xml
+/app/schema-ums.xml
