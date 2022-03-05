@@ -4,6 +4,7 @@ import com.blogspot.ostas.apps.dbdive.jpa.domain.orders.ExchangeOrder;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.List;
 
 @Entity
@@ -13,8 +14,19 @@ public class AppUser extends Identifiable {
 
 	private String password;
 
+	@OneToOne
+	private Wallet wallet = new Wallet();
+
 	@OneToMany
 	private List<ExchangeOrder> exchangeOrders;
+
+	public Wallet getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(Wallet wallet) {
+		this.wallet = wallet;
+	}
 
 	public String getLogin() {
 		return login;

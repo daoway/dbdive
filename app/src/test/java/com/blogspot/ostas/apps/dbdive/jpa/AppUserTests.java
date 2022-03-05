@@ -2,15 +2,17 @@ package com.blogspot.ostas.apps.dbdive.jpa;
 
 import com.blogspot.ostas.apps.dbdive.OracleXeContainertTests;
 import com.blogspot.ostas.apps.dbdive.jpa.domain.AppUser;
+import com.blogspot.ostas.apps.dbdive.jpa.domain.Wallet;
 import com.blogspot.ostas.apps.dbdive.jpa.domain.currency.Currency;
 import com.blogspot.ostas.apps.dbdive.jpa.domain.currency.CurrencyPair;
-import com.blogspot.ostas.apps.dbdive.jpa.domain.orders.LimitOrder;
 import com.blogspot.ostas.apps.dbdive.jpa.domain.enums.OrderSide;
+import com.blogspot.ostas.apps.dbdive.jpa.domain.orders.LimitOrder;
 import com.blogspot.ostas.apps.dbdive.jpa.domain.orders.MarketOrder;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.AppUserRepository;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.CurrencyPairRepository;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.CurrencyRepository;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.OrderRepository;
+import com.blogspot.ostas.apps.dbdive.jpa.repository.WalletRepository;
 import lombok.SneakyThrows;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -50,6 +52,9 @@ class AppUserTests implements OracleXeContainertTests {
 	@Autowired
 	private AppUserRepository appUserRepository;
 
+	@Autowired
+	private WalletRepository walletRepository;
+
 	@Test
 	public void ordersTest() {
 		var btc = new Currency();
@@ -87,6 +92,13 @@ class AppUserTests implements OracleXeContainertTests {
 		trader.setPassword("dummy");
 		trader.setExchangeOrders(List.of(limitOrder, marketOrder));
 
+		var wallet = new Wallet();
+		wallet.getMoneyMap().put(btc, BigDecimal.ONE);
+		wallet.getMoneyMap().put(usd, BigDecimal.valueOf(10_000));
+
+		walletRepository.save(wallet);
+
+		trader.setWallet(wallet);
 		appUserRepository.save(trader);
 
 		var fromDb = appUserRepository.findById(trader.getId()).get();
