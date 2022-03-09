@@ -1,7 +1,9 @@
 package com.blogspot.ostas.apps.dbdive.jpa.domain.currency;
 
 import com.blogspot.ostas.apps.dbdive.jpa.domain.Identifiable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
@@ -9,14 +11,15 @@ import javax.persistence.ManyToOne;
 
 @Data
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class CurrencyPair extends Identifiable {
 
 	@ManyToOne
-	private final Currency baseCurrency;
+	private Currency baseCurrency;
 
 	@ManyToOne
-	private final Currency quoteCurrency;
+	private Currency quoteCurrency;
 
 	@Override
 	public String toString() {

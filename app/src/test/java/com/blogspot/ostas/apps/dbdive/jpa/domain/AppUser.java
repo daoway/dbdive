@@ -10,9 +10,8 @@ import java.util.List;
 @Entity
 public class AppUser extends Identifiable {
 
-	private String login;
-
-	private String password;
+	@OneToOne
+	private AppAuth appAuth = new AppAuth();
 
 	@OneToOne
 	private Wallet wallet = new Wallet();
@@ -28,22 +27,6 @@ public class AppUser extends Identifiable {
 		this.wallet = wallet;
 	}
 
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public List<ExchangeOrder> getExchangeOrders() {
 		return exchangeOrders;
 	}
@@ -52,4 +35,11 @@ public class AppUser extends Identifiable {
 		this.exchangeOrders = exchangeOrders;
 	}
 
+	public AppAuth getAppAuth() {
+		return appAuth;
+	}
+
+	public void setAppAuth(AppAuth appAuth) {
+		this.appAuth = appAuth;
+	}
 }
