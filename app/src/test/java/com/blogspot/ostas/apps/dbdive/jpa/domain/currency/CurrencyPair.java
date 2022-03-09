@@ -4,7 +4,6 @@ import com.blogspot.ostas.apps.dbdive.jpa.domain.Identifiable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;

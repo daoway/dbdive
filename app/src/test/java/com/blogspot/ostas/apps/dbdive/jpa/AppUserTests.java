@@ -15,7 +15,7 @@ import com.blogspot.ostas.apps.dbdive.jpa.repository.CurrencyPairRepository;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.CurrencyRepository;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.OrderRepository;
 import com.blogspot.ostas.apps.dbdive.jpa.repository.WalletRepository;
-import com.blogspot.ostas.apps.dbdive.jpa.service.CustomerService;
+import com.blogspot.ostas.apps.dbdive.jpa.service.AppUserService;
 import lombok.SneakyThrows;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -31,13 +31,13 @@ import org.springframework.test.context.TestPropertySource;
 import javax.sql.DataSource;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @TestPropertySource(properties = "spring.jpa.hibernate.ddl-auto=update")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
 class AppUserTests implements OracleXeContainertTests {
 
 	@Autowired
@@ -62,17 +62,17 @@ class AppUserTests implements OracleXeContainertTests {
 	private AppAuthRepository appAuthRepository;
 
 	@Autowired
-	private CustomerService customerService;
+	private AppUserService appUserService;
 
 	@Test
 	public void ordersTest() {
 		var pair = createPair();
 
-		var trader1 = motherOfUsers("trader0");
+		var trader1 = motherOfUsers("trader0", pair);
 		var fromDb1 = appUserRepository.findById(trader1.getId()).get();
 		assertThat(fromDb1).isEqualTo(trader1);
 
-		var trader2 = motherOfUsers("trader1");
+		var trader2 = motherOfUsers("trader1", pair);
 		var fromDb2 = appUserRepository.findById(trader2.getId()).get();
 		assertThat(fromDb2).isEqualTo(trader2);
 	}
@@ -95,8 +95,7 @@ class AppUserTests implements OracleXeContainertTests {
 		return pair;
 	}
 
-	private AppUser motherOfUsers(String traderAccountName) {
-		var pair = currencyPairRepository.findAll().iterator().next();
+	private AppUser motherOfUsers(String traderAccountName, CurrencyPair pair) {
 		var limitOrder = new LimitOrder();
 		limitOrder.setPair(pair);
 		limitOrder.setType(OrderSide.BID);
@@ -122,7 +121,8 @@ class AppUserTests implements OracleXeContainertTests {
 
 		trader.setAppAuth(appAuth);
 
-		trader.setExchangeOrders(List.of(limitOrder, marketOrder));
+		trader.getExchangeOrders().add(limitOrder);
+		trader.getExchangeOrders().add(marketOrder);
 
 		var wallet = new Wallet();
 		var btc = currencyRepository.findByTicker("BTC");
@@ -135,7 +135,7 @@ class AppUserTests implements OracleXeContainertTests {
 
 		trader.setWallet(wallet);
 
-		appUserRepository.save(trader);
+		appUserService.saveUser(trader);
 		return trader;
 	}
 
